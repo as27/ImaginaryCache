@@ -16,7 +16,9 @@ var Conf Options
 
 // Options is the structure of the config file
 type Options struct {
-	ServerPort string `yaml:"ServerPort"`
+	ServerPort        string `yaml:"ServerPort"`
+	ImaginaryHostPort string `yaml:"ImaginaryHostPort"`
+	CacheRoot         string `yaml:"CacheRoot"`
 }
 
 func init() {

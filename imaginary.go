@@ -14,7 +14,8 @@ import (
 
 // ImaginaryCache is the implementation of the Cache interface
 type ImaginaryCache struct {
-	rootPath string
+	rootPath          string
+	imaginaryHostPort string
 }
 
 // RequestInCache is the implementation of the Cache interface
@@ -43,7 +44,9 @@ func (c *ImaginaryCache) GetDataFromCache(w http.ResponseWriter, r *http.Request
 
 // SendRequestToService is the implementation of the Cache interface
 func (c *ImaginaryCache) SendRequestToService(r *http.Request) *http.Response {
-	resp, err := http.Get(r.URL.String())
+	u := r.URL
+	u.Host = c.imaginaryHostPort
+	resp, err := http.Get(u.String())
 	if err != nil {
 		log.Fatalln(err)
 	}

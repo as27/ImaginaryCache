@@ -20,6 +20,11 @@ type Cache interface {
 var cache Cache
 
 func main() {
+	ic := &ImaginaryCache{
+		rootPath:          Conf.CacheRoot,
+		imaginaryHostPort: Conf.ImaginaryHostPort,
+	}
+	cache = ic
 	router := mux.NewRouter()
 	router.HandleFunc(`/{type}`, GetRequest).Methods("GET")
 	log.Fatal(http.ListenAndServe(Conf.ServerPort, router))
