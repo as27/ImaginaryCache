@@ -21,7 +21,7 @@ var cache Cache
 
 func main() {
 	router := mux.NewRouter()
-	router.HandleFunc(`/`, GetRequest).Methods("GET")
+	router.HandleFunc(`/{type}`, GetRequest).Methods("GET")
 	log.Fatal(http.ListenAndServe(Conf.ServerPort, router))
 }
 
@@ -31,6 +31,7 @@ func GetRequest(w http.ResponseWriter, r *http.Request) {
 		cache.GetDataFromCache(w, r)
 	} else {
 		resp := cache.SendRequestToService(r)
+		defer resp.Body.Close()
 		var buf bytes.Buffer
 		rBody := io.TeeReader(resp.Body, &buf)
 		_, err := io.Copy(w, rBody)
