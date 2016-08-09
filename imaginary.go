@@ -20,9 +20,12 @@ type ImaginaryCache struct {
 
 // RequestInCache is the implementation of the Cache interface
 func (c *ImaginaryCache) RequestInCache(r *http.Request) bool {
-	fp := filepath.Join(c.rootPath, c.makePath(r))
+	fp := c.makePath(r)
 	_, err := os.Stat(fp)
-	return os.IsExist(err)
+	if os.IsNotExist(err) {
+		return false
+	}
+	return true
 }
 
 // GetDataFromCache is the implementation of the Cache interface
@@ -44,9 +47,7 @@ func (c *ImaginaryCache) GetDataFromCache(w http.ResponseWriter, r *http.Request
 
 // SendRequestToService is the implementation of the Cache interface
 func (c *ImaginaryCache) SendRequestToService(r *http.Request) *http.Response {
-	u := r.URL
-	u.Host = c.imaginaryHostPort
-	resp, err := http.Get(u.String())
+	resp, err := http.Get(c.imaginaryHostPort + r.URL.String())
 	if err != nil {
 		log.Fatalln(err)
 	}
@@ -72,12 +73,16 @@ func (c *ImaginaryCache) makePath(r *http.Request) string {
 	strToHash := ""
 	vars := mux.Vars(r)
 	strToHash += vars["type"]
-	strToHash += vars["file"]
-	strToHash += vars["width"]
-	strToHash += vars["height"]
+	strToHash += r.FormValue("file")
+	strToHash += r.FormValue("width")
+	strToHash += r.FormValue("height")
 	h := sha1.New()
 	io.WriteString(h, strToHash)
 	hstr := fmt.Sprintf("%x", h.Sum(nil))
-	p := filepath.Join(string(hstr[:2]), hstr)
+	p := filepath.Join(Conf.CacheRoot, string(hstr[:2]), hstr)
+	//log.Printf("%#v", r.URL)
+	//log.Printf("%#v", vars)
+	//log.Println(strToHash)
+	//log.Println(p)
 	return p
 }

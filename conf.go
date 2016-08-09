@@ -19,6 +19,7 @@ type Options struct {
 	ServerPort        string `yaml:"ServerPort"`
 	ImaginaryHostPort string `yaml:"ImaginaryHostPort"`
 	CacheRoot         string `yaml:"CacheRoot"`
+	FullsizeRoot      string `yaml:"FullsizeRoot"`
 }
 
 func init() {
